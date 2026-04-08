@@ -1,3 +1,8 @@
+console.log("ENV CHECK:");
+console.log("CLIENT ID:", process.env.GOOGLE_CLIENT_ID);
+console.log("CLIENT SECRET:", process.env.GOOGLE_CLIENT_SECRET);
+console.log("BASE URL:", process.env.BASE_URL);
+
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import prisma from "./prisma.js";
