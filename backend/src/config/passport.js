@@ -37,6 +37,7 @@ passport.use(
       } catch (error) {
         console.error("GOOGLE AUTH ERROR:", error);
         return done(error, null);
+        console.log("CLIENT ID USED:", process.env.GOOGLE_CLIENT_ID);
       }
     }
   )
