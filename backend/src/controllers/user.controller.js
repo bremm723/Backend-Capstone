@@ -47,3 +47,63 @@ export const updatePassword = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// === AIR TRACKER ===
+export const getAir = async (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { waterIntake: true, waterDate: true }
+    });
+    // Reset jika beda hari
+    const jumlah = user.waterDate === today ? user.waterIntake : 0;
+    res.json({ jumlah });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateAir = async (req, res) => {
+  try {
+    const { jumlah } = req.body;
+    const today = new Date().toISOString().split('T')[0];
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { waterIntake: jumlah, waterDate: today }
+    });
+    res.json({ jumlah });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// === TARGET KALORI ===
+export const getTarget = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { targetHarian: true, targetMingguan: true }
+    });
+    const targetMingguan = user.targetMingguan ? JSON.parse(user.targetMingguan) : Array(7).fill(null);
+    res.json({ targetHarian: user.targetHarian, targetMingguan });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateTarget = async (req, res) => {
+  try {
+    const { targetHarian, targetMingguan } = req.body;
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        targetHarian: targetHarian ? parseInt(targetHarian) : null,
+        targetMingguan: targetMingguan ? JSON.stringify(targetMingguan) : null
+      }
+    });
+    res.json({ message: "Target berhasil disimpan" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
